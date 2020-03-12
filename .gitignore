@@ -1,3 +1,6 @@
 *.ipynb_checkpoints
 *.mat
 *.m
+*.png
+*.jpg
+*.DS_Store
