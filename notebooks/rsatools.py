@@ -6,7 +6,6 @@ from os import listdir
 from os.path import isfile, join, exists
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import pdist, squareform,cosine,euclidean,mahalanobis
-from statsmodels.stats.multitest import multipletests
 import scipy.io as sio
 import scipy.stats as stats
 
@@ -14,16 +13,14 @@ import scipy.stats as stats
 # for validating matrices
 #########################
 
-def nancheck(Y):
-    assert(np.sum(np.isnan(Y)) == 0)
+def assert_nonans(Y):
+    if np.sum(np.isnan(Y)) > 0:
+        raise ValueError('nans present in matrix')
     return Y
 
-def validate_2D(Y):
+def assert_valid2D(Y):
     Y = np.array(Y)
-    assert(Y.ndim==2)
-    assert(Y.shape[0] > 1)
-    assert(Y.shape[1] > 1)
-    if np.sum(np.isnan(Y)) > 0:
+    if Y.ndim is not 2 or Y.shape[0] < 2 or Y.shape[1] < 2 or np.sum(np.isnan(Y)) > 0:
         raise ValueError('input contains nans')
     else:
         return Y
@@ -43,11 +40,32 @@ def assert_symmetric(Y, rtol=1e-05, atol=1e-08):
 # for computing rdvs from matrices
 #########################
 
-def rdv(Y,dist='correlation'):
-    return pdist(validate_2D(Y),dist)
-
 def rsm2rdm(Y):
-    return (nancheck(Y) - 1) * -1
+    return (assert_nonans(Y) - 1) * -1
+
+def rdv(Y,dist='correlation'):
+    return pdist(assert_valid2D(Y),dist)
+
+def rdm(Y,dist='correlation'):
+    return squareform(pdist(assert_valid2D(Y),dist))
+
+def rsv(Y,dist='correlation'):
+    return rsm2rdm(pdist(assert_valid2D(Y),dist))
+
+def rsm(Y,dist='correlation'):
+    return rsm2rdm(squareform(pdist(assert_valid2D(Y),dist)))
+
+def rdv_categ(Y, categ_idx, dist='correlation'):
+    return pdist(collapse_categs(assert_valid2D(Y), categ_idx), dist)
+
+def rsv_categ(Y, categ_idx, dist='correlation'):
+    return rsm2rdm(pdist(collapse_categs(assert_valid2D(Y), categ_idx), dist))
+
+def rdm_categ(Y, categ_idx, dist='correlation'):
+    return squareform(pdist(collapse_categs(assert_valid2D(Y), categ_idx), dist))
+
+def rsm_categ(Y, categ_idx, dist='correlation'):
+    return rsm2rdm(squareform(pdist(collapse_categs(assert_valid2D(Y), categ_idx), dist)))
 
 #########################
 # for computing rdv corrs
@@ -56,7 +74,7 @@ def rsm2rdm(Y):
 def rdvcorr(Y1, Y2, dist='correlation', corr = 'pearson'):
     
     # ensure inputs have no nans, have same dim
-    Y1, Y2 = nancheck(Y1), nancheck(Y2)
+    Y1, Y2 = assert_nonans(Y1), assert_nonans(Y2)
 
     # case 0: inputs are mismatched (error)
     assert(Y1.shape[0] == Y2.shape[0])
@@ -101,4 +119,35 @@ def rdvcorr_list(Y_target, Y_list, dist='correlation', corr = 'pearson'):
         corr_list.append(rdvcorr(Y_target, Y, dist, corr))
         
     return corr_list
+    
+#########################
+# misc matrix operations
+#########################
+
+def collapse_categs(Y_item, categ_idx):
+    Y_item = assert_valid2D(Y_item)
+    cats = np.unique(categ_idx)
+    n = len(cats)
+    
+    Y_categ = []
+    
+    for i in range(n):
+        cat = cats[i]
+        avg = np.mean(Y_item[categ_idx==cat,:],axis=0)
+        Y_categ.append(avg)
+        
+    Y_categ = np.vstack(Y_categ)
+   
+    return Y_categ
+
+
+def univar_mean(Y):
+    Y = assert_valid2D(Y)
+    return np.mean(Y,axis=1)
+
+def stack_mean(Y_list):
+    _ = assert_valid2D(Y_list[0])
+    ndim = np.ndim(Y_list[0])
+    return np.mean(np.stack(Y_list,axis=ndim),axis=ndim)
+    
     
