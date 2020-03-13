@@ -5,7 +5,7 @@ import os
 from os import listdir
 from os.path import isfile, join, exists
 import matplotlib.pyplot as plt
-from scipy.spatial.distance import pdist, squareform,cosine,euclidean,mahalanobis
+from scipy.spatial.distance import pdist,squareform,cosine,euclidean,mahalanobis
 import scipy.io as sio
 import scipy.stats as stats
 
@@ -14,13 +14,13 @@ import scipy.stats as stats
 #########################
 
 def assert_nonans(Y):
-    if np.sum(np.isnan(Y)) > 0:
+    if sumnans(Y) > 0:
         raise ValueError('nans present in matrix')
     return Y
 
 def assert_valid2D(Y):
     Y = np.array(Y)
-    if Y.ndim is not 2 or Y.shape[0] < 2 or Y.shape[1] < 2 or np.sum(np.isnan(Y)) > 0:
+    if Y.ndim is not 2 or Y.shape[0] < 2 or Y.shape[1] < 2 or sumnans(Y) > 0:
         raise ValueError('input contains nans')
     else:
         return Y
@@ -104,7 +104,6 @@ def rdvcorr(Y1, Y2, dist='correlation', corr = 'pearson'):
         
     return r_val
 
-    
 def rdvcorr_list(Y_target, Y_list, dist='correlation', corr = 'pearson'):
     
     if len(Y_list) < 1:
@@ -124,6 +123,9 @@ def rdvcorr_list(Y_target, Y_list, dist='correlation', corr = 'pearson'):
 # misc matrix operations
 #########################
 
+def sumnans(Y):
+    return np.sum(np.isnan(Y))
+
 def collapse_categs(Y_item, categ_idx):
     Y_item = assert_valid2D(Y_item)
     cats = np.unique(categ_idx)
@@ -140,7 +142,6 @@ def collapse_categs(Y_item, categ_idx):
    
     return Y_categ
 
-
 def univar_mean(Y):
     Y = assert_valid2D(Y)
     return np.mean(Y,axis=1)
@@ -150,4 +151,23 @@ def stack_mean(Y_list):
     ndim = np.ndim(Y_list[0])
     return np.mean(np.stack(Y_list,axis=ndim),axis=ndim)
     
+def subsample_dm(Y_dist, incl_idx):
+    n = len(incl_idx)
+    Y_sub = np.empty((n,n))
+    Y_sub[:] = np.nan
+    
+    r,c = 0,0
+    
+    for a in range(n):
+        for b in range(n):
+            Y_sub[a,b] = Y_dist[incl_idx[a],incl_idx[b]]
+            
+    return Y_sub
+
+def remove_dm_nans(Y_dist):
+    nan_rows = np.argwhere(np.isnan(Y_dist[0]))
+    valid_rows = np.setdiff1d(np.arange(Y_dist.shape[0]),nan_rows)
+    Y_dist_nonans = subsample_dm(Y_dist, valid_rows)
+    return Y_dist_nonans
+
     
