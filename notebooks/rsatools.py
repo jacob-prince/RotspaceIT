@@ -9,6 +9,8 @@ from scipy.spatial.distance import pdist,squareform,cosine,euclidean,mahalanobis
 import scipy.io as sio
 import scipy.stats as stats
 import seaborn as sns
+from numpy.polynomial.polynomial import polyfit
+
 
 #########################
 # for validating matrices
@@ -248,4 +250,51 @@ def plot_matrices(Y_list, lib = 'mpl', cbar = True, cmap = 'viridis', tl = [''],
         assert(Y.ndim < 3)
         plot_matrix(Y, lib = lib, cbar = cbar, cmap = cmap, tl = tl[c-1], xl = xl[c-1], yl = yl[c-1], vmin = vmin, vmax = vmax, ticks = ticks, fontsize = fontsize)
         c += 1
+
+        
+# todo: clean up
+def dm_corr_scatter(Y, corr = 'pearson', dotsize = 1, lib = 'mpl', cbar = True, cmap = 'viridis', tl = ['rdm1','rdm2','corr'], xl = ['imgs','imgs','rdv1'], yl = ['imgs','imgs','rdv2'], vmin = 0, vmax = 0, ticks = True, fontsize = None):
+    
+    if type(Y) is not list or len(Y) != 2:
+        raise ValueError('input must be a list of two distance vectors/matrices')
+    
+    for i in range(2):
+        if np.ndim(Y[i]) == 1 and assert_validdm(squareform(Y[i])) is True:
+            Y[i] = squareform(Y[i])
+    
+        if assert_validdm(Y[i]) is False:
+            raise ValueError('input %d is not valid distance matrix' % i)
+    
+    if Y[0].shape[0] != Y[1].shape[0]:
+        raise ValueError('inputs have different dimensionality')
+    
+    for i in range(2):
+        plt.subplot(1,3,i+1)
+        plot_matrix(Y[i], lib = lib, cbar = cbar, cmap = cmap, tl = tl[i], xl = xl[i], yl = yl[i], vmin = vmin, vmax = vmax, ticks = ticks, fontsize = fontsize)
+        
+        # make this more efficient
+        Y[i] = squareform(Y[i],force='tovector')
+    
+    #dotsize = 300 // len(Y[0])
+    
+    # add generic correlate function
+    if corr == 'pearson':
+        r = np.corrcoef(Y[0],Y[1])[0,1]
+    else:
+        raise ValueError('corr method not yet implemented')
+    
+    plt.subplot(1,3,3)
+    plt.scatter(Y[0],Y[1], dotsize)
+    
+    b, m = polyfit(Y[0],Y[1], 1)
+
+    plt.plot(Y[0], b + m * Y[0], '-', lw = 5, color = 'k')
+    plt.title('RDM %s corr = %.3f' % (corr, r), fontsize=fontsize)
+    plt.xlabel(xl[2],fontsize=fontsize)
+    plt.ylabel(yl[2],fontsize=fontsize)
+    
+    if ticks is False:
+        plt.xticks([])
+        plt.yticks([])
+        
         
