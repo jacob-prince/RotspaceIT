@@ -292,6 +292,7 @@ def dm_corr_scatter(Y, corr = 'pearson', dotsize = 1, lib = 'mpl', cbar = True, 
     plt.title('RDM %s corr = %.3f' % (corr, r), fontsize=fontsize)
     plt.xlabel(xl[2],fontsize=fontsize)
     plt.ylabel(yl[2],fontsize=fontsize)
+    plt.axis('equal')
     
     if ticks is False:
         plt.xticks([])
