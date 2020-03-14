@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import pdist,squareform,cosine,euclidean,mahalanobis
 import scipy.io as sio
 import scipy.stats as stats
+import seaborn as sns
 
 #########################
 # for validating matrices
@@ -123,6 +124,13 @@ def rdvcorr_list(Y_target, Y_list, dist='correlation', corr = 'pearson'):
 # misc matrix operations
 #########################
 
+def v2m(dv):
+    if np.ndim(dv) is not 1:
+        raise ValueError('input must be a vector')
+    dm = squareform(dv)
+    assert_validdm(dm)
+    return dm
+
 def sumnans(Y):
     return np.sum(np.isnan(Y))
 
@@ -147,7 +155,8 @@ def univar_mean(Y):
     return np.mean(Y,axis=1)
 
 def stack_mean(Y_list):
-    _ = assert_valid2D(Y_list[0])
+    for Y in Y_list:
+        _ = assert_valid2D(Y)
     ndim = np.ndim(Y_list[0])
     return np.mean(np.stack(Y_list,axis=ndim),axis=ndim)
     
@@ -170,4 +179,73 @@ def remove_dm_nans(Y_dist):
     Y_dist_nonans = subsample_dm(Y_dist, valid_rows)
     return Y_dist_nonans
 
+#########################
+# plotting operations
+#########################
+
+def plot_matrix(Y, lib = 'mpl', cbar = True, cmap = 'viridis', tl = '', xl = '', yl = '', vmin = 0, vmax = 0, ticks = True, fontsize = None):
     
+    assert(Y.ndim < 3)
+    
+    if lib is not 'mpl' and lib is not 'sns':
+        raise ValueError('must specify mpl or sns library')
+    
+    minval,maxval = np.min(Y),np.max(Y)
+    
+    if vmin == 0: 
+        vmin = minval
+    if vmax == 0:
+        vmax = maxval
+    
+    if lib == 'mpl':
+        if Y.shape[0] == Y.shape[1]:     
+            fig = plt.imshow(Y, cmap=cmap, clim=(vmin,vmax))
+        else:
+            fig = plt.imshow(Y, aspect='auto', cmap=cmap, clim=(vmin,vmax))
+            
+        if cbar is True:
+            plt.colorbar()
+        
+        if ticks is False:
+            plt.xticks([])
+            plt.yticks([])
+                
+    elif lib == 'sns':
+        
+        if Y.shape[0] == Y.shape[1]:
+            sq = True
+        else:
+            sq = False
+            
+        fig = sns.heatmap(Y, square=sq, cmap=cmap, cbar=cbar, vmin=vmin, vmax=vmax, xticklabels = ticks, yticklabels = ticks)
+            
+    plt.title(tl, fontsize = fontsize)
+    plt.xlabel(xl, fontsize = fontsize)
+    plt.ylabel(yl, fontsize = fontsize)
+    
+    return
+
+def subplot_str_helper(label, n):
+    if type(label) is str:
+        label = [label]
+    if len(label) == 1:
+        label = label * n
+    return label
+
+def plot_matrices(Y_list, lib = 'mpl', cbar = True, cmap = 'viridis', tl = [''], xl = [''], yl = [''], vmin = 0, vmax = 0, ticks = True, fontsize = None):
+    
+    n = len(Y_list)
+    if type(Y_list) is not list:
+        raise ValueError('input must be a list of arrays')
+    
+    tl = subplot_str_helper(tl, n)
+    xl = subplot_str_helper(xl, n)
+    yl = subplot_str_helper(yl, n)
+          
+    c = 1
+    for Y in Y_list:
+        plt.subplot(1,n,c)
+        assert(Y.ndim < 3)
+        plot_matrix(Y, lib = lib, cbar = cbar, cmap = cmap, tl = tl[c-1], xl = xl[c-1], yl = yl[c-1], vmin = vmin, vmax = vmax, ticks = ticks, fontsize = fontsize)
+        c += 1
+        
