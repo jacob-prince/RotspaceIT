@@ -58,11 +58,15 @@ def get_layer_names(model):
     
     lay_names_user_fmt = []
     
+    c = 0
     for lay in lay_names_user:
         lay_type = lay.split('_')[1]
         
         if 'Conv' in lay_type:
-            fmt = 'conv'
+            if 'downsample' in lay_names_torch[c]:
+                fmt = 'downsample'
+            else:
+                fmt = 'conv'
         elif 'Norm' in lay_type:
             fmt = 'norm'
         elif 'ReLU' in lay_type:
@@ -78,6 +82,7 @@ def get_layer_names(model):
         else:
             print(lay_type)
             raise ValueError('fmt not implemented yet')
+        c+=1
         
         lay_names_user_fmt.append(lay.split('_')[0] + '_' + fmt + lay.split('_')[2])
 
