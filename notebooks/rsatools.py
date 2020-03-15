@@ -11,7 +11,6 @@ import scipy.stats as stats
 import seaborn as sns
 from numpy.polynomial.polynomial import polyfit
 
-
 #########################
 # for validating matrices
 #########################
