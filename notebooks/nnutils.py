@@ -36,7 +36,7 @@ def get_layer_names(model):
         module_type = layers[i][1].__class__.__name__
 
         nonbasic_types = np.array(['Sequential','BasicBlock','Bottleneck','Fire',
-                                 '_DenseBlock', '_DenseLayer', 'Transition', '_Transition','InvertedResidual','_InvertedResidual','ConvBNReLU','CORblock_Z'])
+                                 '_DenseBlock', '_DenseLayer', 'Transition', '_Transition','InvertedResidual','_InvertedResidual','ConvBNReLU','CORblock_Z','CORblock_S','CORblock'])
 
         conv_types = ['Conv','Linear']
 
