@@ -101,4 +101,23 @@ def convert_relu(parent):
         elif len(list(child.children())) > 0:
             convert_relu(child)
             
-            
+
+def check_dir_for_layer(abs_path, layer_str, save_fmt):
+    
+    if exists(abs_path) is False:
+        raise ValueError('must input existing directory')
+        
+    all_files = os.listdir(abs_path)
+    strs_to_check = []
+    
+    for file in all_files:
+        lay_str = file.split('_')[0] + '_' + file.split('_')[1]
+        
+        if save_fmt in file:
+            strs_to_check.append(lay_str)
+    
+    if any(s in layer_str for s in strs_to_check):
+        return True
+    else:
+        return False
+    
