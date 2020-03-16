@@ -36,7 +36,7 @@ def get_layer_names(model):
         module_type = layers[i][1].__class__.__name__
 
         nonbasic_types = np.array(['Sequential','BasicBlock','Bottleneck','Fire',
-                                 '_DenseBlock', '_DenseLayer', 'Transition', '_Transition','InvertedResidual','_InvertedResidual','ConvBNReLU'])
+                                 '_DenseBlock', '_DenseLayer', 'Transition', '_Transition','InvertedResidual','_InvertedResidual','ConvBNReLU','CORblock_Z'])
 
         conv_types = ['Conv','Linear']
 
@@ -79,6 +79,10 @@ def get_layer_names(model):
             fmt = 'fc'
         elif 'Dropout' in lay_type:
             fmt = 'drop'
+        elif 'Identity' in lay_type:
+            fmt = 'identity'
+        elif 'Flatten' in lay_type:
+            fmt = 'flatten'
         else:
             print(lay_type)
             raise ValueError('fmt not implemented yet')
@@ -90,3 +94,11 @@ def get_layer_names(model):
         
     return lay_names_torch, lay_names_user, lay_names_user_fmt
 
+def convert_relu(parent):
+    for child_name, child in parent.named_children():
+        if isinstance(child, nn.ReLU):
+            setattr(parent, child_name, nn.ReLU(inplace=False))
+        elif len(list(child.children())) > 0:
+            convert_relu(child)
+            
+            
