@@ -65,10 +65,15 @@ def get_layer_names(model):
         if 'Conv' in lay_type:
             if 'downsample' in lay_names_torch[c]:
                 fmt = 'downsample'
+            elif 'skip' in lay_names_torch[c]:
+                fmt = 'conv_skip'
             else:
                 fmt = 'conv'
         elif 'Norm' in lay_type:
-            fmt = 'norm'
+            if 'skip' in lay_names_torch[c]:
+                fmt = 'norm_skip'
+            else:
+                fmt = 'norm'
         elif 'ReLU' in lay_type:
             fmt = 'relu'
         elif 'MaxPool' in lay_type:
