@@ -151,6 +151,20 @@ def collapse_categs(Y_item, categ_idx):
    
     return Y_categ
 
+def collapse_categs_4D(Y_item, categ_idx):
+    cats = np.unique(categ_idx)
+    n = len(cats)
+    
+    Y_categ = []
+    
+    for i in range(n):
+        cat = cats[i]
+        avg = np.mean(Y_item[categ_idx==cat],axis=0)
+        Y_categ.append(avg)
+    
+    Y_categ = np.stack(Y_categ,axis=0)
+    return Y_categ
+
 def univar_mean(Y):
     Y = assert_valid2D(Y)
     return np.mean(Y,axis=1)
