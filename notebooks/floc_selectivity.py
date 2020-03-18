@@ -48,6 +48,7 @@ def floc_selectivity(Y, labels, FDR_p = 0.0001):
             p[np.isnan(p)] = 1
 
             # determine which neurons remain significant after FDR correction
+            # https://stats.stackexchange.com/questions/63441/what-are-the-practical-differences-between-the-benjamini-hochberg-1995-and-t
             FDR = multipletests(p, alpha=FDR_p, method='FDR_by', is_sorted=False, returnsorted=False)
 
             # sort indices according to the t map

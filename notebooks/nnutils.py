@@ -126,3 +126,53 @@ def check_dir_for_layer(abs_path, layer_str, save_fmt):
     else:
         return False
     
+
+def load_batched_activations(abs_path, layer_list, batch_size, reshape_to_2D = True):
+    
+    Y = []
+    
+    if not isinstance(layer_list, list):
+        #print('converting layer list from string to list')
+        layer_list = [layer_list]
+    
+    if exists(abs_path) is False:
+        raise ValueError('must input existing directory')
+      
+    pathlist_fn = join(abs_path,'absolute_act_filepaths_batchsize-%d.npy' % batch_size)
+    
+    if exists(pathlist_fn) is False:
+        raise ValueError('dir is missing list of absolute filepaths')
+        
+    pathlist = np.load(pathlist_fn)
+        
+    # get items that have the correct batch size
+    valid_paths = []
+    for path in pathlist:
+        if 'batchsize-' + str(batch_size) in path:
+            valid_paths.append(path)
+    
+    # for each layer, assemble matrix and append
+    for layer in layer_list:
+        #print('layer:',layer)
+        Y_lay = []
+        for path in valid_paths: # messy but fine
+            if layer in path:
+                #print('string %s found in path %s' % (layer, path))
+                Y_batch = np.load(path)
+                #print(Y_batch.shape)
+                dims = Y_batch.shape
+                
+                if np.sum(np.isnan(Y_batch)) > 0:
+                    raise ValueError('loaded batch contains nan(s)')
+                    
+                if np.ndim(Y_batch) != 2 and reshape_to_2D is True:
+                    Y_batch = np.reshape(Y_batch, (dims[0], dims[1] * dims[2] * dims[3]))
+               
+                Y_lay.append(Y_batch)
+        
+        if len(layer_list) == 1:
+            return np.vstack(Y_lay)
+        else:
+            Y.append(np.vstack(Y_lay))
+           
+    return Y
