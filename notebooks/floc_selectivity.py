@@ -8,6 +8,8 @@ from scipy.spatial.distance import pdist, squareform, cosine, euclidean, mahalan
 from statsmodels.stats.multitest import multipletests
 import scipy.io as sio
 import scipy.stats as stats
+from IPython.core.debugger import set_trace
+
 
 def floc_selectivity(Y, labels, FDR_p = 0.0001):
     
@@ -21,11 +23,14 @@ def floc_selectivity(Y, labels, FDR_p = 0.0001):
     pref_dict['domain_props'] = [] # same, but proportions of layer neurons
     pref_dict['domain_idx'] = [] # indices of the selective neurons
     pref_dict['domain_unit_rankings'] = [] # neurons ranked by selectivity for all domains
+    pref_dict['domain_sel_masks'] = [] # mask of which units are selective
     
     domain_idx = np.unique(labels)
     
     # iterate through domains 
     for domainA in domain_idx:
+        
+        mask = np.ones(Y.shape[1],)
                 
         pref_dict['twoway_Ns'][str(domainA)] = dict()
         
@@ -73,11 +78,14 @@ def floc_selectivity(Y, labels, FDR_p = 0.0001):
                 # if the first comparison...
                 if dom_flag is False:
                     dom_neurons = dom_pref_ranking[:dom_nsig] # create deepnet selective region
+                    print(f'size of initial region is {len(dom_neurons)} units. comparison is {domainA} vs. {domainB}')
                     dom_flag = True
                 else: # slim down the region
                     dom_neurons = pd.Index.intersection(pd.Index(dom_neurons), pd.Index(dom_pref_ranking[:dom_nsig]), sort = False)
-
-        dom_neurons = dom_neurons.to_numpy()
+                    print(f'new size of region is {len(dom_neurons)} units. comparison is {domainA} vs. {domainB}')
+                    
+        if not isinstance(dom_neurons, np.ndarray):
+            dom_neurons = dom_neurons.to_numpy()
 
         # calculate the size of the significant ROI
         dom_nsig = len(dom_neurons)
@@ -100,5 +108,8 @@ def floc_selectivity(Y, labels, FDR_p = 0.0001):
         pref_dict['domain_props'].append(len(dom_neurons) / n_neurons_in_layer)
         pref_dict['domain_idx'].append(dom_neurons)
         pref_dict['domain_unit_rankings'].append(dom_ranking_score_final)
+        
+        mask[dom_neurons] = 0
+        pref_dict['domain_sel_masks'].append(mask)
         
     return pref_dict
