@@ -1,38 +1,56 @@
 #!/bin/sh
 
-# sbatch run_lesioning_experiment.sh Faces sledgehammer conv1 False
-# sbatch run_lesioning_experiment.sh Scenes sledgehammer conv1 False
+sbatch run_lesioning_experiment.sh Faces sledgehammer conv1 False
+sbatch run_lesioning_experiment.sh Scenes sledgehammer conv1 False
 
 sbatch run_lesioning_experiment.sh Faces sledgehammer conv1 True
 sbatch run_lesioning_experiment.sh Scenes sledgehammer conv1 True
 
-# sbatch run_lesioning_experiment.sh Faces cascade-forward maxpool5 False
-# sbatch run_lesioning_experiment.sh Scenes cascade-forward maxpool5 False
-
-# sbatch run_lesioning_experiment.sh Faces cascade-backward maxpool5 False
-# sbatch run_lesioning_experiment.sh Scenes cascade-backward maxpool5 False
-
 sbatch run_lesioning_experiment.sh Scenes cascade-forward conv1 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward relu1 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward maxpool1 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward conv2 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward relu2 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward maxpool2 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward conv3 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward relu3 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward conv4 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward relu4 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward conv5 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward relu5 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward maxpool5 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward avgpool5 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward drop5 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward fc6 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward relu6 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward drop6 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward fc7 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward relu7 False
-sbatch run_lesioning_experiment.sh Scenes cascade-forward fc8 False
+
+sbatch run_lesioning_experiment.sh Faces cascade-backward conv1 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward relu1 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward maxpool1 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward conv2 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward relu2 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward maxpool2 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward conv3 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward relu3 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward conv4 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward relu4 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward conv5 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward relu5 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward maxpool5 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward avgpool5 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward drop5 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward fc6 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward relu6 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward drop6 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward fc7 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward relu7 False
+sbatch run_lesioning_experiment.sh Faces cascade-backward fc8 False
+
+sbatch run_lesioning_experiment.sh Scenes cascade-backward conv1 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward relu1 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward maxpool1 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward conv2 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward relu2 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward maxpool2 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward conv3 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward relu3 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward conv4 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward relu4 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward conv5 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward relu5 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward maxpool5 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward avgpool5 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward drop5 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward fc6 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward relu6 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward drop6 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward fc7 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward relu7 False
+sbatch run_lesioning_experiment.sh Scenes cascade-backward fc8 False
 
 # sbatch run_lesioning_experiment.sh Faces single-layer conv1 False
 # sbatch run_lesioning_experiment.sh Faces single-layer relu1 False

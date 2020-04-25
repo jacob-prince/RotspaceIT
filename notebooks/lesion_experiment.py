@@ -55,6 +55,14 @@ lesioning_method = sys.argv[2] #'sledgehammer' # sledgehammer, cascade-forward, 
 target_layer = sys.argv[3] #'relu3'
 randomize_lesions = sys.argv[4]
 
+if randomize_lesions == 'True' or randomize_lesions is True:
+    randomize_lesions = True
+else:
+    randomize_lesions = False
+    
+print(randomize_lesions)
+print(type(randomize_lesions))
+    
 overwrite = True
 save_as = '.npy'
 save_layer_rdvs = False
@@ -149,7 +157,7 @@ else:
     data_loader = torch.utils.data.DataLoader(
         dataset,
         batch_size=batch_size,
-        num_workers=12,
+        num_workers=0,
         shuffle=False
     )
 

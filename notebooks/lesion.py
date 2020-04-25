@@ -245,11 +245,6 @@ def lesioning_validation_pass(model,
 
 
 def set_lesioning_method(layer_mask_dict, method, target_lay, randomize, layer_names, device):
-    
-    if randomize == 'True':
-        randomize = True
-    else:
-        randomize = False
         
     print(f'RANDOMIZE: {randomize}')
     print(type(randomize))
