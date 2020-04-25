@@ -246,15 +246,29 @@ def lesioning_validation_pass(model,
 
 def set_lesioning_method(layer_mask_dict, method, target_lay, randomize, layer_names, device):
     
+    if randomize == 'True':
+        randomize = True
+    else:
+        randomize = False
+        
+    print(f'RANDOMIZE: {randomize}')
+    print(type(randomize))
     output_dict = copy.deepcopy(layer_mask_dict)
     
     if method == 'sledgehammer':
         for lay in layer_names:
+            
+            if lay == 'fc7':
+                print(np.squeeze(np.argwhere(output_dict[lay].cpu().numpy().reshape(-1) == 0)))
+                
             n = int(torch.sum(output_dict[lay] == 0).cpu().numpy())
             print(f'{n} inactive units in layer {lay}')
-            
+                        
             if randomize is True:
+                print('NEXT THING')
                 output_dict[lay] = utils.random_shuffle_tensor(output_dict[lay]).to(device)
+                if lay == 'fc7':
+                    print(np.squeeze(np.argwhere(output_dict[lay].cpu().numpy().reshape(-1) == 0)))
     
     elif method == 'single-layer':
         if target_lay in output_dict.keys(): # only proceed if valid layer was passed

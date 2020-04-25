@@ -47,15 +47,15 @@ imageset = 'imagefiles-fullset'
 img_dim = 224
 batch_size = 50
 FDR_threshold = 0.05
-val_batch_size = 1000
+val_batch_size = 250
 subset_by = 1
 
-lesioning_method = sys.argv[1] #'sledgehammer' # sledgehammer, cascade-forward, cascade-backward, single-layer
-target_layer = sys.argv[2] #'relu3'
-lesion_domain = sys.argv[3] #'Faces'
+lesion_domain = sys.argv[1] #'Faces'
+lesioning_method = sys.argv[2] #'sledgehammer' # sledgehammer, cascade-forward, cascade-backward, single-layer
+target_layer = sys.argv[3] #'relu3'
 randomize_lesions = sys.argv[4]
 
-overwrite = False
+overwrite = True
 save_as = '.npy'
 save_layer_rdvs = False
 rdv_dist = 'correlation'
@@ -124,6 +124,7 @@ else:
 
     if torch.cuda.is_available():
         model.to(device)
+        print(device)
 
     #print(model)
     
@@ -148,7 +149,7 @@ else:
     data_loader = torch.utils.data.DataLoader(
         dataset,
         batch_size=batch_size,
-        num_workers=0,
+        num_workers=12,
         shuffle=False
     )
 
@@ -245,7 +246,7 @@ else:
     if torch.cuda.is_available():
         model.to(device)
 
-    !nvidia-smi
+    #!nvidia-smi
 
     ###############
 
@@ -255,8 +256,6 @@ else:
     # reload the dataset, this time applying the transform
     val_dataset =  datasets.ImageFolder(root = val_imageset_dir, transform = data_transform)
     
-    #set_trace()
-
     val_subset_idx = list(range(0, len(val_dataset), subset_by))
     val_dataset = Subset(val_dataset, val_subset_idx)
 
