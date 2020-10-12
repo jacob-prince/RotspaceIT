@@ -8,4 +8,4 @@
 #SBATCH --output logfiles/sbatch-logfile-%j.txt  # send stdout to outfile
 #SBATCH --time=04:00:00
 
-python3 lesion_experiment.py $1 $2 $3 $4
+python3 lesion_experiment.py $1 $2 $3 $4 $5

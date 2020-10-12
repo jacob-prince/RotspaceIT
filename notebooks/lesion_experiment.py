@@ -54,6 +54,7 @@ lesion_domain = sys.argv[1] #'Faces'
 lesioning_method = sys.argv[2] #'sledgehammer' # sledgehammer, cascade-forward, cascade-backward, single-layer
 target_layer = sys.argv[3] #'relu3'
 randomize_lesions = sys.argv[4]
+searchlight = sys.argv[5]
 
 if randomize_lesions == 'True' or randomize_lesions is True:
     randomize_lesions = True
@@ -62,6 +63,14 @@ else:
     
 print(randomize_lesions)
 print(type(randomize_lesions))
+
+if searchlight == 'True' or searchlight is True:
+    searchlight = True
+else:
+    searchlight = False
+    
+print(searchlight)
+print(type(searchlight))
     
 overwrite = True
 save_as = '.npy'
@@ -94,7 +103,7 @@ else:
 
 lesion_resultsdir = join(homedir,'data','d02_modeling','lesioning',network,imageset)
 
-results_str = f'LesionResults_dim-{img_dim}_FDR-{FDR_str}_subset-{subset_by}_method-{lesioning_method}_random-{str(randomize_lesions)}{target_str}_domain-{lesion_domain}'
+results_str = f'LesionResults_dim-{img_dim}_FDR-{FDR_str}_subset-{subset_by}_method-{lesioning_method}_random-{str(randomize_lesions)}{target_str}_searchlight-{str(searchlight)}_domain-{lesion_domain}'
 
 os.makedirs(lesion_resultsdir,exist_ok=True)
 
@@ -224,9 +233,17 @@ else:
 
         for lay in range(len(model.layers)):
             mask = pref_dicts[model.layers_fmt[lay]]['domain_sel_masks'][lesioning_idx] # index 1 for faces
+            
             Y = utils.load_batched_activations(activation_savedir, [model.layers_fmt[lay]], batch_size, reshape_to_2D = False)
             dims = Y.shape[1:]
             mask = np.reshape(mask,dims)
+                    
+            if searchlight is True:
+                idx0 = mask == 0
+                idx1 = mask == 1
+                mask[idx0] = 1
+                mask[idx1] = 0
+                
             categ_sel_masks[model.layers[lay]] = torch.Tensor(mask).to(device)
 
         # set apply parameter to true

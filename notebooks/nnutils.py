@@ -149,9 +149,10 @@ def load_batched_activations(abs_path, layer_list, batch_size, reshape_to_2D = T
     pathlist_fn = join(abs_path,'absolute_act_filepaths_batchsize-%d.npy' % batch_size)
     
     if exists(pathlist_fn) is False:
+        print(pathlist_fn)
         raise ValueError('dir is missing list of absolute filepaths')
         
-    pathlist = np.load(pathlist_fn)
+    pathlist = np.load(pathlist_fn,allow_pickle=True)
         
     # get items that have the correct batch size
     valid_paths = []

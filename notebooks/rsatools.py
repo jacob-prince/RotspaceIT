@@ -10,6 +10,7 @@ import scipy.io as sio
 import scipy.stats as stats
 import seaborn as sns
 from numpy.polynomial.polynomial import polyfit
+from IPython.core.debugger import set_trace
 
 #########################
 # for validating matrices
@@ -76,7 +77,7 @@ def rsm_categ(Y, categ_idx, dist='correlation'):
 def rdvcorr(Y1, Y2, dist='correlation', corr = 'pearson'):
     
     # ensure inputs have no nans, have same dim
-    Y1, Y2 = assert_nonans(Y1), assert_nonans(Y2)
+    Y1, Y2 = np.ravel(assert_nonans(Y1)), np.ravel(assert_nonans(Y2))
 
     # case 0: inputs are mismatched (error)
     assert(Y1.shape[0] == Y2.shape[0])
@@ -132,6 +133,13 @@ def v2m(dv):
     assert_validdm(dm)
     return dm
 
+def m2v(dm):
+    if np.ndim(dm) is not 2:
+        raise ValueError('input must be a symmetrical distance matrix')
+    dm = squareform(dm,force='tovector')
+    assert_validdm(dm)
+    return dm
+
 def sumnans(Y):
     return np.sum(np.isnan(Y))
 
@@ -176,6 +184,16 @@ def stack_mean(Y_list):
     return np.mean(np.stack(Y_list,axis=ndim),axis=ndim)
     
 def subsample_dm(Y_dist, incl_idx):
+    
+    try:
+        if np.ndim(Y_dist) == 1:
+            Y_dist = v2m(np.ravel(Y_dist))
+            flag = True
+        else:
+            flag = False
+    except:
+        set_trace()
+        
     n = len(incl_idx)
     Y_sub = np.empty((n,n))
     Y_sub[:] = np.nan
@@ -186,6 +204,9 @@ def subsample_dm(Y_dist, incl_idx):
         for b in range(n):
             Y_sub[a,b] = Y_dist[incl_idx[a],incl_idx[b]]
             
+    if flag is True:
+        Y_sub = m2v(Y_sub)
+        
     return Y_sub
 
 def remove_dm_nans(Y_dist):
@@ -193,6 +214,11 @@ def remove_dm_nans(Y_dist):
     valid_rows = np.setdiff1d(np.arange(Y_dist.shape[0]),nan_rows)
     Y_dist_nonans = subsample_dm(Y_dist, valid_rows)
     return Y_dist_nonans
+
+def nan_matrix(dims):
+    Y = np.empty(dims)
+    Y[:] = np.nan
+    return Y
 
 #########################
 # plotting operations
