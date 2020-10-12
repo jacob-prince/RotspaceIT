@@ -10,4 +10,4 @@
 *.pth
 *.txt
 z-Old
-*/*z-Old
+notebooks/z-Old
