@@ -77,8 +77,8 @@ def rsm_categ(Y, categ_idx, dist='correlation'):
 def rdvcorr(Y1, Y2, dist='correlation', corr = 'pearson'):
     
     # ensure inputs have no nans, have same dim
-    Y1, Y2 = np.ravel(assert_nonans(Y1)), np.ravel(assert_nonans(Y2))
-
+    Y1, Y2 = assert_nonans(Y1), assert_nonans(Y2)
+    
     # case 0: inputs are mismatched (error)
     assert(Y1.shape[0] == Y2.shape[0])
     
