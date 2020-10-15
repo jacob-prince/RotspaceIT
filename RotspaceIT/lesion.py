@@ -1,5 +1,4 @@
 import numpy as np
-#import matplotlib.pyplot as plt
 import pandas as pd
 import scipy.stats as stats
 import os
@@ -24,10 +23,11 @@ from time import sleep
 import gc
 import copy
 
-#import importlib
-import nnutils as utils
-import floc_selectivity as fs
-import rsatools as rsa
+sys.path.append('/home/jacobpri/git/RotspaceIT/')
+
+from RotspaceIT import rsatools as rsa
+from RotspaceIT import nnutils as utils
+from RotspaceIT import floc_selectivity as fs
 
 ###############################################
 
