@@ -135,8 +135,60 @@ def check_dir_for_layer(abs_path, layer_str, save_fmt):
     else:
         return False
     
-
 def load_batched_activations(abs_path, layer_list, batch_size, reshape_to_2D = True):
+    
+    Y = []
+    
+    if not isinstance(layer_list, list):
+        #print('converting layer list from string to list')
+        layer_list = [layer_list]
+    
+    if exists(abs_path) is False:
+        raise ValueError('must input existing directory')
+      
+    all_files = os.listdir(abs_path)
+    
+    # for each layer, assemble matrix and append
+    for layer in layer_list:
+        #print('layer:',layer)
+        
+        load_files = []
+        batch_idx = []
+        for file in all_files:
+            if layer in file and str(batch_size) in file:
+                load_files.append(file)
+                batch_idx.append(int(file.split('-')[-1][:-4]))
+        
+        load_files = np.array(load_files)[np.argsort(batch_idx)]
+        
+        #print(loadfiles)
+            
+        Y_lay = []
+        for file in load_files: # messy but fine
+            
+            #print('string %s found in path %s' % (layer, file))
+            Y_batch = np.load(join(abs_path,file))
+            #print(Y_batch.shape)
+            dims = Y_batch.shape
+                
+            if np.sum(np.isnan(Y_batch)) > 0:
+                raise ValueError('loaded batch contains nan(s)')
+
+            if np.ndim(Y_batch) != 2 and reshape_to_2D is True:
+                Y_batch = np.reshape(Y_batch, (dims[0], dims[1] * dims[2] * dims[3]))
+
+            Y_lay.append(Y_batch)
+        
+        if len(layer_list) == 1:
+            return np.vstack(Y_lay)
+        else:
+            Y.append(np.vstack(Y_lay))
+           
+    return Y
+
+    
+
+def load_batched_activations_old(abs_path, layer_list, batch_size, reshape_to_2D = True):
     
     Y = []
     
