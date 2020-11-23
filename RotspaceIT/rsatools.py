@@ -43,8 +43,11 @@ def assert_symmetric(Y, rtol=1e-05, atol=1e-08):
 # for computing rdvs from matrices
 #########################
 
-def rsm2rdm(Y):
-    return (assert_nonans(Y) - 1) * -1
+def rsm2rdm(Y,nan_ok = False):
+    if nan_ok is True:
+        return ((Y - 1) * -1)
+    else:
+        return (assert_nonans(Y) - 1) * -1
 
 def rdv(Y,dist='correlation'):
     return pdist(assert_valid2D(Y),dist)
